@@ -9,12 +9,19 @@
 import SpriteKit
 import GameplayKit
 
-class GameScene: SKScene {
+class GameScene: SKScene, SKPhysicsContactDelegate {
     
+    //sprites
      var enemy:SKNode?
      var player:SKNode?
     
-    override func didMove(to view: SKView) {
+    override func didMove(to view: SKView)
+    {
+        
+        // Required for SKPhysicsContactDelegate
+        self.physicsWorld.contactDelegate = self
+        
+        
         // intialize your sprite variables
         self.player = self.childNode(withName: "player")
         self.enemy = self.childNode(withName:"enemy")
@@ -50,7 +57,14 @@ class GameScene: SKScene {
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?)
     {
+        
+        let touch = touches.first
+        if (touch == nil) {
+            return
         }
+        self.player?.position.y = self.player!.position.y + 10
+        //  let mouseLocation = touch!.location(in:self)
+    }
         
     
     
