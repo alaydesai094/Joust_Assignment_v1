@@ -38,22 +38,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         // MARK: Add a lives label
         // ------------------------
-//        self.livesLabel.text = "Lives: \(self.lives)"
-//        self.livesLabel.fontName = "Avenir-Bold"
-//        self.livesLabel.fontColor = UIColor.magenta
-//        self.livesLabel.fontSize = 100;
-//        self.livesLabel.position = CGPoint(x:100,
-//                                           y:-200)
-//        
-        
+        self.livesLabel.text = "Lives: \(self.lives)"
+        self.livesLabel.fontName = "Avenir-Bold"
+        self.livesLabel.fontColor = UIColor.black
+        self.livesLabel.fontSize = 100;
+        self.livesLabel.position = CGPoint(x:-170,
+                                           y:0)
         // MARK: Add a score label
         // ------------------------
         self.scoreLabel.text = "Score: \(self.score)"
         self.scoreLabel.fontName = "Avenir-Bold"
-        self.scoreLabel.fontColor = UIColor.magenta
+        self.scoreLabel.fontColor = UIColor.white
         self.scoreLabel.fontSize = 100;
         self.scoreLabel.position = CGPoint(x:200,
-                                           y:-100)
+                                           y:0)
         
         
         addChild(self.livesLabel)
