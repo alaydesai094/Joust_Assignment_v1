@@ -12,8 +12,9 @@ import GameplayKit
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
     //sprites
-     var enemy:SKNode?
-     var player:SKNode?
+    var enemy:SKNode!
+    var player:SKNode!
+    
     
     override func didMove(to view: SKView)
     {
@@ -39,22 +40,34 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         // 3. apply sequence to sprite
         self.enemy!.run(SKAction.repeatForever(sequence))
-       
+        
+        
+        
+        // Show animation for dinosaur
+        // ----------------------------
+        // 1. make an array of images for the animation
+        // -- SKTexture = Object to hold images
+        var dinoTextures:[SKTexture] = []
+        for i in 1...4 {
+            let fileName = "penguin_walk0\(i)"
+            print("Adding: \(fileName) to array")
+            dinoTextures.append(SKTexture(imageNamed: fileName))
+        }
+        
+        // 2. Tell Spritekit to use that array to create your animation
+        let walkingAnimation = SKAction.animate(
+            with: dinoTextures,
+            timePerFrame: 0.1)
+        
+        // 3. Repeat the animation forever
+        self.player.run(SKAction.repeatForever(walkingAnimation))
+        
+        
+        
     }
     
     
-    func touchDown(atPoint pos : CGPoint)
-    {
-       }
-    
-    func touchMoved(toPoint pos : CGPoint)
-    {
-       }
-    
-    func touchUp(atPoint pos : CGPoint)
-    {
-       }
-    
+    var lookingDir = "right"
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?)
     {
         
@@ -62,28 +75,76 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if (touch == nil) {
             return
         }
-        self.player?.position.y = self.player!.position.y + 10
-        //  let mouseLocation = touch!.location(in:self)
+        
+        //Where user has touched?
+        let mouseLocation = touch!.location(in:self)
+        //let spriteTouched = self.atPoint(mouseLocation)
+        //print("px\(self.player.position.x),py\(self.player.position.y),")
+        // ------------
+        // Detect collision with right wall
+        // ------------
+        
+        let xpos = mouseLocation.x
+        //print(half)
+        if ( xpos > 0 )
+        {
+            
+            if(self.player.position.x < 400 ) {
+                
+                self.player.position.x = self.player.position.x + 100
+                
+                let lookRightAction = SKAction.scaleX(to: 2, duration:0)
+                self.player.run(lookRightAction)
+                
+                
+                
+                
+                print("right : x\(self.player.position.x)")
+                
+            }
+            else{
+                self.player.position.x = 0 - 300
+            }
+            
+            
+        }
+            
+        else if(xpos < 0)
+        {
+            
+            if(self.player.position.x > 0 - 450 )
+            {
+                
+                self.player.position.x = self.player.position.x - 100
+                
+                let lookLeftAction = SKAction.scaleX(to: -2, duration:0)
+                self.player.run(lookLeftAction)
+                
+                print("left : x\(self.player.position.x)")
+                
+            }
+                
+            else
+            {
+                self.player.position.x = 300
+            }
+            
+            
+        }
+        
     }
+    
+    var lose:Bool = false
+    
+    func youLose() {
+        self.lose = true
         
-    
-    
-    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?)
-    {
-        }
-    
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?)
-    {
-        }
-    
-    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?)
-    {
-        }
-    
-    
-    override func update(_ currentTime: TimeInterval)
-    {
-        
+        print("YOU LOSE!")
+        let messageLabel = SKLabelNode(text: "YOU LOSE!")
+        messageLabel.fontColor = UIColor.yellow
+        messageLabel.fontSize = 60
+        messageLabel.position.x = self.size.width/2
+        messageLabel.position.y = self.size.height/2
+        addChild(messageLabel)
     }
-        
 }
