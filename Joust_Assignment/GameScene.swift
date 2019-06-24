@@ -13,6 +13,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     //sprites
     var enemy:SKNode!
+     var enemy1:SKNode!
+     var enemy2:SKNode!
+     var enemy3:SKNode!
     var player:SKNode!
     
     // GAME STAT SPRITES
@@ -28,7 +31,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     {
         
         //sound
-        
         let audio = SKAudioNode(fileNamed: "music.wav")
         addChild(audio)
         
@@ -60,22 +62,25 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // intialize your sprite variables
         self.player = self.childNode(withName: "player")
         self.enemy = self.childNode(withName:"enemy")
-        
+        self.enemy1 = self.childNode(withName:"enemy1")
+        self.enemy2 = self.childNode(withName:"enemy2")
+        self.enemy3 = self.childNode(withName:"enemy3")
         // make the enemy move back and forth forever
         // ----------------------------------------
         // 1. make your sk actions
         // --- 1a. move left
-        let m1 = SKAction.moveBy(x: -500, y: 0, duration: 2)
+        let m1 = SKAction.moveBy(x: -500, y: 0, duration: 5)
         // --- 1b. move right
-        let m2 = SKAction.moveBy(x: 500, y: 0, duration: 2)
+        let m2 = SKAction.moveBy(x: 500, y: 0, duration: 5)
         
         // 2. put actions into a sequence
         let sequence = SKAction.sequence([m1,m2])
         
         // 3. apply sequence to sprite
-        self.enemy!.run(SKAction.repeatForever(sequence))
-        
-        
+         self.enemy!.run(SKAction.repeatForever(sequence))
+         self.enemy1!.run(SKAction.repeatForever(sequence))
+         self.enemy2!.run(SKAction.repeatForever(sequence))
+         self.enemy3!.run(SKAction.repeatForever(sequence))
         
         // Show animation for player
         // ----------------------------
@@ -137,7 +142,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 print("right : x\(self.player.position.x)")
                 
             }
-            else{
+            else
+            {
                 self.player.position.x = 0 - 300
             }
             
