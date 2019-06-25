@@ -13,14 +13,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     //sprites
     var enemy:SKNode!
-     var enemy1:SKNode!
-     var enemy2:SKNode!
-     var enemy3:SKNode!
     var player:SKNode!
     
     // GAME STAT SPRITES
     let livesLabel = SKLabelNode(text: "Lives: ")
     let scoreLabel = SKLabelNode(text: "Score: ")
+    
+    var audio = SKAudioNode(fileNamed: "music.wav")
+    //addChild(audio)
+    
+    var walkaudio = SKAudioNode(fileNamed: "walk.wav")
     
     
     // GAME STATISTIC VARIABLES
@@ -30,9 +32,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     override func didMove(to view: SKView)
     {
         
-        //sound
-        let audio = SKAudioNode(fileNamed: "music.wav")
-        addChild(audio)
+        //initialize swipe
+        let swipeUp = UISwipeGestureRecognizer(target: self,
+        action: #selector(GameScene.swipeUp(sender:)))
+        swipeUp.direction = .up
+        view.addGestureRecognizer(swipeUp)
+        
+        let swipeDown = UISwipeGestureRecognizer(target: self,
+        action: #selector(GameScene.swipeDown(sender:)))
+        swipeDown.direction = .down
+        view.addGestureRecognizer(swipeDown)
+        
         
         // Required for SKPhysicsContactDelegate
         self.physicsWorld.contactDelegate = self
@@ -42,18 +52,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // ------------------------
         self.livesLabel.text = "Lives: \(self.lives)"
         self.livesLabel.fontName = "Avenir-Bold"
-        self.livesLabel.fontColor = UIColor.black
-        self.livesLabel.fontSize = 100;
-        self.livesLabel.position = CGPoint(x:-170,
-                                           y:0)
+        self.livesLabel.fontColor = UIColor.white
+        self.livesLabel.fontSize = 45;
+        self.livesLabel.position = CGPoint(x:-250,
+                                           y:550)
         // MARK: Add a score label
         // ------------------------
         self.scoreLabel.text = "Score: \(self.score)"
         self.scoreLabel.fontName = "Avenir-Bold"
         self.scoreLabel.fontColor = UIColor.white
-        self.scoreLabel.fontSize = 100;
-        self.scoreLabel.position = CGPoint(x:200,
-                                           y:0)
+        self.scoreLabel.fontSize = 45;
+        self.scoreLabel.position = CGPoint(x:250,
+                                           y:550)
         
         
         addChild(self.livesLabel)
@@ -62,9 +72,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // intialize your sprite variables
         self.player = self.childNode(withName: "player")
         self.enemy = self.childNode(withName:"enemy")
-        self.enemy1 = self.childNode(withName:"enemy1")
-        self.enemy2 = self.childNode(withName:"enemy2")
-        self.enemy3 = self.childNode(withName:"enemy3")
+       
         // make the enemy move back and forth forever
         // ----------------------------------------
         // 1. make your sk actions
@@ -78,9 +86,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         // 3. apply sequence to sprite
          self.enemy!.run(SKAction.repeatForever(sequence))
-         self.enemy1!.run(SKAction.repeatForever(sequence))
-         self.enemy2!.run(SKAction.repeatForever(sequence))
-         self.enemy3!.run(SKAction.repeatForever(sequence))
         
         // Show animation for player
         // ----------------------------
@@ -103,6 +108,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.player.run(SKAction.repeatForever(walkingAnimation))
         
         
+        
+    }
+    
+    @objc func swipeUp(sender: UISwipeGestureRecognizer) {
+        // Handle the swipe
+        self.player.position.y = self.player.position.y + 300
+        
+    }
+    
+    @objc func swipeDown(sender: UISwipeGestureRecognizer) {
+        // Handle the swipe
+        self.player.position.y = self.player.position.y - 300
         
     }
     
@@ -132,6 +149,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             if(self.player.position.x < 400 ) {
                 
                 self.player.position.x = self.player.position.x + 100
+
                 
                 let lookRightAction = SKAction.scaleX(to: 2, duration:0)
                 self.player.run(lookRightAction)
@@ -145,6 +163,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             else
             {
                 self.player.position.x = 0 - 300
+               
             }
             
             
@@ -168,6 +187,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             else
             {
                 self.player.position.x = 300
+                
             }
             
             
