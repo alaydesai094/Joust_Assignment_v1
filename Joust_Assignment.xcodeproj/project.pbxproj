@@ -17,6 +17,8 @@
 		9067A0B222BA0AB30030EC0E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9067A0B022BA0AB30030EC0E /* LaunchScreen.storyboard */; };
 		9098B42422C1EEB30013118E /* music.wav in Resources */ = {isa = PBXBuildFile; fileRef = 9098B42322C1EEB20013118E /* music.wav */; };
 		9098B42622C1F3B80013118E /* walk.wav in Resources */ = {isa = PBXBuildFile; fileRef = 9098B42522C1F3B80013118E /* walk.wav */; };
+		9098B42822C3A7CD0013118E /* WinScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9098B42722C3A7CD0013118E /* WinScene.swift */; };
+		9098B42A22C3A7E10013118E /* GameOverScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9098B42922C3A7E00013118E /* GameOverScene.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,6 +34,8 @@
 		9067A0B322BA0AB30030EC0E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9098B42322C1EEB20013118E /* music.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = music.wav; sourceTree = "<group>"; };
 		9098B42522C1F3B80013118E /* walk.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = walk.wav; sourceTree = "<group>"; };
+		9098B42722C3A7CD0013118E /* WinScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WinScene.swift; sourceTree = "<group>"; };
+		9098B42922C3A7E00013118E /* GameOverScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameOverScene.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -64,6 +68,8 @@
 		9067A0A022BA0AB00030EC0E /* Joust_Assignment */ = {
 			isa = PBXGroup;
 			children = (
+				9098B42922C3A7E00013118E /* GameOverScene.swift */,
+				9098B42722C3A7CD0013118E /* WinScene.swift */,
 				9098B42522C1F3B80013118E /* walk.wav */,
 				9098B42322C1EEB20013118E /* music.wav */,
 				9067A0A122BA0AB00030EC0E /* AppDelegate.swift */,
@@ -154,7 +160,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9098B42A22C3A7E10013118E /* GameOverScene.swift in Sources */,
 				9067A0A822BA0AB00030EC0E /* GameScene.swift in Sources */,
+				9098B42822C3A7CD0013118E /* WinScene.swift in Sources */,
 				9067A0AA22BA0AB00030EC0E /* GameViewController.swift in Sources */,
 				9067A0A222BA0AB00030EC0E /* AppDelegate.swift in Sources */,
 			);
