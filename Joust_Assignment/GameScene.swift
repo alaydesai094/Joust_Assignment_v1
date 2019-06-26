@@ -46,6 +46,24 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     override func didMove(to view: SKView)
     {
+        // MARK: Create a background image:
+        // --------------------------
+        
+        // 1. create an image node
+        let bgNode = SKSpriteNode(imageNamed: "bg")
+        
+        // 2. by default, image is shown in bottom left corner
+        // I want to move image to middle
+        // middle x: self.size.width/2
+        // middle y: self.size.height/2
+        bgNode.position = CGPoint(x:self.size.width/2,
+                                  y:self.size.height/2)
+        
+        
+        // Force the background to always appear at the back
+        bgNode.zPosition = -1
+
+        
         self.physicsBody = SKPhysicsBody(edgeLoopFrom: self.frame)
         
         //initialize swipe
@@ -205,7 +223,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 // 2. remove the cat from the scene
                 print("Removing cat at position: \(arrayIndex)")
                 // ---- 2a. remove from the array
-                if(!self.enemies.isEmpty){
+                if(self.enemies.count > 0){
                 self.enemies.remove(at: arrayIndex)
                 }
                 // ---- 2b. remove from scene (undraw the cat)
@@ -250,7 +268,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 // 2. remove the cat from the scene
                 print("Removing cat at position: \(arrayIndex)")
                 // ---- 2a. remove from the array
-                self.eggs.remove(at: arrayIndex)
+                if(self.eggs.count > 0){
+                    self.eggs.remove(at: arrayIndex)
+                }
                 
                 // ---- 2b. remove from scene (undraw the cat)
                 temp.removeFromParent()
