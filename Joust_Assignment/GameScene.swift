@@ -15,6 +15,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     // var enemy:SKNode!
     var player:SKNode!
     
+    //Array of sprites
     var enemies:[SKSpriteNode] = []
     var eggs:[SKSpriteNode] = []
     
@@ -26,6 +27,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var audio = SKAudioNode(fileNamed: "music.wav")
     var walkaudio = SKAudioNode(fileNamed: "walk.wav")
     
+    //flag
     var moving: Bool = false
     
 //    // generate a random (x,y) for the cat
@@ -44,42 +46,32 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var lives = 4
     var score = 0
     
+    //---------------------------------
+    // MARK: Did Move
+    //-------------------------------
+    
     override func didMove(to view: SKView)
     {
-        // MARK: Create a background image:
-        // --------------------------
+        // Required for SKPhysicsContactDelegate
+        self.physicsWorld.contactDelegate = self
         
-        // 1. create an image node
-        let bgNode = SKSpriteNode(imageNamed: "bg")
-        
-        // 2. by default, image is shown in bottom left corner
-        // I want to move image to middle
-        // middle x: self.size.width/2
-        // middle y: self.size.height/2
-        bgNode.position = CGPoint(x:self.size.width/2,
-                                  y:self.size.height/2)
-        
-        
-        // Force the background to always appear at the back
-        bgNode.zPosition = -1
-
-        
+       // physical body to the frame
         self.physicsBody = SKPhysicsBody(edgeLoopFrom: self.frame)
+    
         
-        //initialize swipe
+        // MARK: initialize swipes
+        
+        //Swipe Up
         let swipeUp = UISwipeGestureRecognizer(target: self,
         action: #selector(GameScene.swipeUp(sender:)))
         swipeUp.direction = .up
         view.addGestureRecognizer(swipeUp)
         
+        //Swipe Down
         let swipeDown = UISwipeGestureRecognizer(target: self,
         action: #selector(GameScene.swipeDown(sender:)))
         swipeDown.direction = .down
         view.addGestureRecognizer(swipeDown)
-        
-        
-        // Required for SKPhysicsContactDelegate
-        self.physicsWorld.contactDelegate = self
         
         
         // MARK: Add a lives label
@@ -99,18 +91,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.scoreLabel.position = CGPoint(x:250,
                                            y:550)
         
-        
+        //MARK: Adding Childs to the screen
         addChild(self.livesLabel)
         addChild(self.scoreLabel)
-        
+        addChild(self.audio)
         
         for i in 0 ... 5 {
-            
-//            self.randX = Int.random(in: -308...308)
-//            self.randY = Int.random(in: -599...599)
-            
-            //print (self.randX, self.randY)
-            
+
             spawnEnemy()
             
         }
@@ -118,14 +105,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         // intialize your sprite variables
         self.player = self.childNode(withName: "player")
-        //self.enemy = self.childNode(withName:"enemy")
-       
        
         
-        // Show animation for player
+        // MARK:Show animation for player
         // ----------------------------
         // 1. make an array of images for the animation
-        // -- SKTexture = Object to hold images
         var dinoTextures:[SKTexture] = []
         for i in 1...4
         {
@@ -145,6 +129,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     
+    //---------------------------------
+    // MARK:Update Function
+    //-------------------------------
+    
     var timeOfLastUpdate:TimeInterval?
   
     
@@ -156,34 +144,25 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             enemy.position.x = enemy.position.x + 10
             
-            
             if(enemy.position.x < 200 ) {
-                
-              
                 moving = true
             }
             
             if(enemy.position.x > 0 - 150 )
             {
-                
-               
                 moving = false
             }
             
-        
             
-            
-            if(moving){
+            if(moving)
+            {
                 if ( enemy.position.x > 0 )
                 {
-                
                     enemy.position.x = enemy.position.x + 10
-                    
                     
                     let lookRightAction = SKAction.scaleX(to: 1 , duration:0)
                     enemy.run(lookRightAction)
-                
-                    
+                   
                 }
                 
             }
@@ -202,41 +181,42 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         }
         
-        // win condition
+        // lose condition
         if (self.enemies.isEmpty) {
-            
             youLose()
         }
-        // MARK: R2: detect collisions between zombie and cat
-        for (arrayIndex, temp) in enemies.enumerated() {
-            if (self.player.intersects(temp) == true) {
-                print("CAT COLLISION DETECTED!")
+        
+        // MARK:  detect collisions between zombie and cat
+        for (arrayIndex, temp) in enemies.enumerated()
+        {
+            if (self.player.intersects(temp) == true)
+            {
                 
                 spawnEgg()
                 
-                
-                // 1. increase the score
-//                self.score = self.score + 1
-//                self.scoreLabel.text = "Score: \(self.score)"
-//                self.randX = Int.random(in: -308...308)
-//                self.randY = Int.random(in: -599...599)
-                // 2. remove the cat from the scene
+                // 1. Reduce the lives
+               // self.lives = self.lives - 1
+
+                // 2. remove the enemy from the scene
                 print("Removing cat at position: \(arrayIndex)")
                 // ---- 2a. remove from the array
                 if(self.enemies.count > 0){
                 self.enemies.remove(at: arrayIndex)
                 }
-                // ---- 2b. remove from scene (undraw the cat)
+                // ---- 2b. remove from scene (undraw the enemy)
                 temp.removeFromParent()
                 
             }
         } // end for loop
         
-        if (timeOfLastUpdate == nil) {
+        //MARK: egg converts into enemy
+        if (timeOfLastUpdate == nil)
+        {
             timeOfLastUpdate = currentTime
         }
         
-         for (arrayIndex, temp) in eggs.enumerated() {
+         for (arrayIndex, temp) in eggs.enumerated()
+         {
         // print a message every 3 seconds
         let timePassed = (currentTime - timeOfLastUpdate!)
         if (timePassed >= 6 ) {
@@ -249,25 +229,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         }
         
-        // MARK: R2: detect collisions between player and egg
+        // MARK: detect collisions between player and egg
         for (arrayIndex, temp) in eggs.enumerated() {
             if (self.player.intersects(temp) == true) {
+                
                 // 1. increase the score
                 self.score = self.score + 1
                 self.scoreLabel.text = "Score: \(self.score)"
                 
-               // spawnEnemy()
-                
-                
                 if (self.eggs.isEmpty) {
-                    
                     youWin()
-                    
                 }
                 
-                // 2. remove the cat from the scene
+                // 2. remove the egg from the scene
                 print("Removing cat at position: \(arrayIndex)")
-                // ---- 2a. remove from the array
+                // ---- 2a. Remove from the array
                 if(self.eggs.count > 0){
                     self.eggs.remove(at: arrayIndex)
                 }
@@ -282,20 +258,57 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     
+    //---------------------------------
+    // MARK:Swipe up
+    //-------------------------------
     
-    
-    @objc func swipeUp(sender: UISwipeGestureRecognizer) {
+    @objc func swipeUp(sender: UISwipeGestureRecognizer)
+    {
         // Handle the swipe
-        self.player.position.y = self.player.position.y + 300
+
+        if(self.player.position.x < 350 ) {
+            
+           self.player.position.y = self.player.position.y + 300
+         
+            let lookRightAction = SKAction.scaleX(to: 2, duration:0)
+            self.player.run(lookRightAction)
+         
+        }
+        else
+        {
+            self.player.position.x = 0 - 250
+            
+        }
         
     }
+    
+    //---------------------------------
+    // MARK:Swipe Down
+    //-------------------------------
     
     @objc func swipeDown(sender: UISwipeGestureRecognizer) {
         // Handle the swipe
-        self.player.position.y = self.player.position.y - 300
+      
+        if(self.player.position.x > 0 - 300 )
+        {
+             self.player.position.y = self.player.position.y - 300
+            
+            let lookLeftAction = SKAction.scaleX(to: -2, duration:0)
+            self.player.run(lookLeftAction)
+            
+        }
+            
+        else
+        {
+            self.player.position.x = 250
+        }
         
     }
     
+    
+    //---------------------------------
+    // MARK:Touch began
+    //-------------------------------
     
     var lookingDir = "right"
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?)
@@ -314,23 +327,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // Detect collision with right wall
         // ------------
         
+        //ddChild(self.walkaudio)
+        
         let xpos = mouseLocation.x
         //print(half)
         if ( xpos > 0 )
         {
             
-            if(self.player.position.x < 350 ) {
+            if(self.player.position.x < 200 ) {
                 
+                // Move to right
                 self.player.position.x = self.player.position.x + 100
 
-                
                 let lookRightAction = SKAction.scaleX(to: 2, duration:0)
                 self.player.run(lookRightAction)
-                
-                
-                
-                
-                print("right : x\(self.player.position.x)")
                 
             }
             else
@@ -345,15 +355,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         else if(xpos < 0)
         {
             
-            if(self.player.position.x > 0 - 300 )
+            if(self.player.position.x > 0 - 200 )
             {
-                
+                //move to left
                 self.player.position.x = self.player.position.x - 100
                 
                 let lookLeftAction = SKAction.scaleX(to: -2, duration:0)
                 self.player.run(lookLeftAction)
                 
-                print("left : x\(self.player.position.x)")
                 
             }
                 
@@ -363,51 +372,47 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 
             }
             
-            
         }
         
     }
     
     
     
-  
-    
+  //--------------------------------
+    // MARK: Make a Spwan of Enemies
+//-----------------------------------
     func spawnEnemy() {
-        // lets add some cats
+        // Add an emeny
         let enemy = SKSpriteNode(imageNamed: "enemy")
         
+        //put it at a random position
         let randX = Int.random(in: -308...308)
         let randY = Int.random(in: -599...599)
         
         enemy.position = CGPoint(x:randX, y:randY)
         
+        // Add physics body
         enemy.physicsBody = SKPhysicsBody(texture: enemy.texture!,
                                                size: enemy.texture!.size())
         
         enemy.physicsBody?.affectedByGravity = true
-        
         enemy.physicsBody?.restitution = 0.75
         enemy.physicsBody?.isDynamic = true
+        enemy.physicsBody?.categoryBitMask = 3
         
-        // set the bed category to 4
-        enemy.physicsBody?.categoryBitMask = 4
-        
-        // set the collision mask = 0
-       // enemy.physicsBody?.collisionBitMask = 8
-        
-        // add the cat to the scene
+        // add the enemy to the scene
         addChild(enemy)
         
-        // add the cat to the cats array
+        // add the enemy to the enemies array
         self.enemies.append(enemy)
     }
     
-    
-    
-    
+    //---------------------------------
+    // MARK:Make a Spwan of Eggs
+    //-------------------------------
     
     func spawnEgg() {
-        // lets add some cats
+       
         let egg = SKSpriteNode(imageNamed: "egg")
         
         let randX = Int.random(in: -308...308)
@@ -419,45 +424,46 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                                           size: egg.texture!.size())
         
         egg.physicsBody?.affectedByGravity = true
-        
         egg.physicsBody?.restitution = 0.75
         egg.physicsBody?.isDynamic = true
-        
-        // set the bed category to 4
         egg.physicsBody?.categoryBitMask = 4
         
-        // set the collision mask = 0
-        // enemy.physicsBody?.collisionBitMask = 8
-        
-        // add the cat to the scene
+        // add the egg to the scene
         addChild(egg)
         
-        // add the cat to the cats array
+        // add the egg to the eggs array
         self.eggs.append(egg)
     }
     
     
- 
+    //---------------------------------
+    // MARK:Win Condition
+    //-------------------------------
     
     func youWin() {
        
-        let WinScene = SKScene(fileNamed:"WinScene")
-        WinScene!.scaleMode = .aspectFill
-        let flipTransition = SKTransition.flipVertical(withDuration: 2)
-        self.scene?.view?.presentScene(
-            WinScene!,
-            transition: flipTransition)
+//        let WinScene = SKScene(fileNamed:"WinScene")
+//        WinScene!.scaleMode = .aspectFill
+//        let flipTransition = SKTransition.flipVertical(withDuration: 2)
+//        self.scene?.view?.presentScene(
+//            WinScene!,
+//            transition: flipTransition)
        
     }
     
+    
+    //---------------------------------
+    // MARK:Loose Condition
+    //-------------------------------
+    
     func youLose() {
         
-        let gameOverScene = SKScene(fileNamed:"GameOverScene")
-        gameOverScene!.scaleMode = .aspectFill
-        let flipTransition = SKTransition.flipVertical(withDuration: 2)
-        self.scene?.view?.presentScene(
-            gameOverScene!,
-            transition: flipTransition)
+//        let gameOverScene = SKScene(fileNamed:"GameOverScene")
+//        gameOverScene!.scaleMode = .aspectFill
+//        let flipTransition = SKTransition.flipVertical(withDuration: 2)
+//        self.scene?.view?.presentScene(
+//            gameOverScene!,
+//            transition: flipTransition)
         
         
     }
