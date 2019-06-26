@@ -26,6 +26,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var audio = SKAudioNode(fileNamed: "music.wav")
     var walkaudio = SKAudioNode(fileNamed: "walk.wav")
     
+    var moving: Bool = false
+    
 //    // generate a random (x,y) for the cat
 //    var randX = Int.random(in: -308...308)
 //    var randY = Int.random(in: -599...599)
@@ -134,21 +136,59 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
          //   enemy.run(SKAction.repeatForever(self.sequence))
             
-            if(enemy.position.x < 350 ) {
+            enemy.position.x = enemy.position.x + 10
+            
+            
+            if(enemy.position.x < 200 ) {
                 
-                enemy.position.x = enemy.position.x + 100
+              
+                moving = true
             }
             
-            if(enemy.position.x > 0 - 300 )
+            if(enemy.position.x > 0 - 150 )
             {
                 
-                enemy.position.x = enemy.position.x - 100
+               
+                moving = false
             }
-                
             
+        
+            
+            
+            if(moving){
+                if ( enemy.position.x > 0 )
+                {
+                
+                    enemy.position.x = enemy.position.x + 10
+                    
+                    
+                    let lookRightAction = SKAction.scaleX(to: 1 , duration:0)
+                    enemy.run(lookRightAction)
+                
+                    
+                }
+                
+            }
+            else{
+                
+            if(enemy.position.x < 0)
+            {
+                     enemy.position.x = enemy.position.x - 10
+                    
+                    let lookLeftAction = SKAction.scaleX(to: -1, duration:0)
+                    enemy.run(lookLeftAction)
+                    
+                    
+                }
+            }
+        
         }
         
-        
+        // win condition
+        if (self.enemies.isEmpty) {
+            
+            youLose()
+        }
         // MARK: R2: detect collisions between zombie and cat
         for (arrayIndex, temp) in enemies.enumerated() {
             if (self.player.intersects(temp) == true) {
@@ -156,11 +196,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 
                 spawnEgg()
                 
-                // win condition
-                if (self.enemies.isEmpty) {
-                   
-                    youLose()
-                }
+                
                 // 1. increase the score
 //                self.score = self.score + 1
 //                self.scoreLabel.text = "Score: \(self.score)"
@@ -169,18 +205,31 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 // 2. remove the cat from the scene
                 print("Removing cat at position: \(arrayIndex)")
                 // ---- 2a. remove from the array
+                if(!self.enemies.isEmpty){
                 self.enemies.remove(at: arrayIndex)
+                }
                 // ---- 2b. remove from scene (undraw the cat)
                 temp.removeFromParent()
-                
-                
-                
-                
                 
             }
         } // end for loop
         
+        if (timeOfLastUpdate == nil) {
+            timeOfLastUpdate = currentTime
+        }
         
+         for (arrayIndex, temp) in eggs.enumerated() {
+        // print a message every 3 seconds
+        let timePassed = (currentTime - timeOfLastUpdate!)
+        if (timePassed >= 6 ) {
+            print("HERE IS A MESSAGE!")
+            timeOfLastUpdate = currentTime
+            // make a cat
+            self.eggs.remove(at: arrayIndex)
+            temp.removeFromParent()
+            self.spawnEnemy()
+        }
+        }
         
         // MARK: R2: detect collisions between player and egg
         for (arrayIndex, temp) in eggs.enumerated() {
