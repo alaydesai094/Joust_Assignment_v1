@@ -12,18 +12,24 @@ import GameplayKit
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
     //sprites
-    var enemy:SKNode!
+    // var enemy:SKNode!
     var player:SKNode!
+    var enemy = SKSpriteNode(imageNamed: "enemy")
     
     // GAME STAT SPRITES
     let livesLabel = SKLabelNode(text: "Lives: ")
     let scoreLabel = SKLabelNode(text: "Score: ")
     
+    //game sound variables
     var audio = SKAudioNode(fileNamed: "music.wav")
-    //addChild(audio)
-    
     var walkaudio = SKAudioNode(fileNamed: "walk.wav")
     
+    // generate a random (x,y) for the cat
+    var previous = 600
+    var randX = Int(CGFloat(arc4random_uniform(UInt32(300))))
+    var randY = Int(CGFloat(arc4random_uniform(UInt32(600))))
+    
+
     
     // GAME STATISTIC VARIABLES
     var lives = 4
@@ -31,6 +37,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     override func didMove(to view: SKView)
     {
+        
         
         //initialize swipe
         let swipeUp = UISwipeGestureRecognizer(target: self,
@@ -69,23 +76,32 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         addChild(self.livesLabel)
         addChild(self.scoreLabel)
         
-        // intialize your sprite variables
-        self.player = self.childNode(withName: "player")
-        self.enemy = self.childNode(withName:"enemy")
+        
+        for i in 0 ... 10 {
+            
+            print (i)
+            spawnEnemy()
+            self.randY = Int(CGFloat(arc4random_uniform(UInt32(self.previous + 300))))
+            
+        }
+       
+        
+        
+        //self.enemy = self.childNode(withName:"enemy")
        
         // make the enemy move back and forth forever
         // ----------------------------------------
         // 1. make your sk actions
         // --- 1a. move left
-        let m1 = SKAction.moveBy(x: -500, y: 0, duration: 5)
-        // --- 1b. move right
-        let m2 = SKAction.moveBy(x: 500, y: 0, duration: 5)
-        
-        // 2. put actions into a sequence
-        let sequence = SKAction.sequence([m1,m2])
-        
-        // 3. apply sequence to sprite
-         self.enemy!.run(SKAction.repeatForever(sequence))
+//        let m1 = SKAction.moveBy(x: -500, y: 0, duration: 5)
+//        // --- 1b. move right
+//        let m2 = SKAction.moveBy(x: 500, y: 0, duration: 5)
+//
+//        // 2. put actions into a sequence
+//        let sequence = SKAction.sequence([m1,m2])
+//
+//        // 3. apply sequence to sprite
+        // self.enemy!.run(SKAction.repeatForever(sequence))
         
         // Show animation for player
         // ----------------------------
@@ -107,9 +123,52 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // 3. Repeat the animation forever
         self.player.run(SKAction.repeatForever(walkingAnimation))
         
-        
-        
     }
+    
+    
+    var timeOfLastUpdate:TimeInterval?
+    
+    override func update(_ currentTime: TimeInterval) {
+        
+      
+        
+        
+        // MARK: R2: detect collisions between zombie and cat
+        for (arrayIndex, temp) in enemies.enumerated() {
+            if (self.player.intersects(temp) == true) {
+               // print("CAT COLLISION DETECTED!")
+                // 1. increase the score
+                self.score = self.score + 1
+                self.scoreLabel.text = "Score: \(self.score)"
+                
+                spawnEnemy()
+                if (self.score == 10) {
+//                    // YOU WIN!!!!
+//                    let winScene = WinScene(size: self.size)
+//
+//                    // CONFIGURE THE LOSE SCENE
+//                    winScene.scaleMode = self.scaleMode
+//
+//                    // MAKE AN ANIMATION SWAPPING TO THE LOSE SCENE
+//                    let transitionEffect = SKTransition.flipHorizontal(withDuration: 2)
+//                    self.view?.presentScene(winScene, transition: transitionEffect)
+//
+//
+//                    break;
+                }
+                
+                // 2. remove the cat from the scene
+               // print("Removing cat at position: \(arrayIndex)")
+                // ---- 2a. remove from the array
+                self.enemies.remove(at: arrayIndex)
+                // ---- 2b. remove from scene (undraw the cat)
+                temp.removeFromParent()
+            }
+        } // end for loop
+    }
+    
+    
+    
     
     @objc func swipeUp(sender: UISwipeGestureRecognizer) {
         // Handle the swipe
@@ -146,7 +205,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if ( xpos > 0 )
         {
             
-            if(self.player.position.x < 400 ) {
+            if(self.player.position.x < 350 ) {
                 
                 self.player.position.x = self.player.position.x + 100
 
@@ -157,12 +216,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 
                 
                 
-                print("right : x\(self.player.position.x)")
+               // print("right : x\(self.player.position.x)")
                 
             }
             else
             {
-                self.player.position.x = 0 - 300
+                self.player.position.x = 0 - 250
                
             }
             
@@ -180,13 +239,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 let lookLeftAction = SKAction.scaleX(to: -2, duration:0)
                 self.player.run(lookLeftAction)
                 
-                print("left : x\(self.player.position.x)")
+               // print("left : x\(self.player.position.x)")
                 
             }
                 
             else
             {
-                self.player.position.x = 300
+                self.player.position.x = 250
                 
             }
             
@@ -195,29 +254,44 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
     }
     
+    
+    
+    var enemies:[SKSpriteNode] = []
+    
     func spawnEnemy() {
-        // lets add some enemy
-        self.enemy = self.childNode(withName:"enemy")
+        // lets add some cats
+        self.enemy.position = CGPoint(x:randX, y:randY)
         
-        //let enemy = SKSpriteNode(imageNamed: "enemy")
+        self.enemy.physicsBody = SKPhysicsBody(texture: self.enemy.texture!,
+                                               size: self.enemy.texture!.size())
         
-        // generate a random (x,y) for the enemy
-        let randX = Int(CGFloat(arc4random_uniform(UInt32(self.size.width-400))))
-        let randY = Int(CGFloat(arc4random_uniform(UInt32(self.size.height-400))))
+        self.enemy.physicsBody?.affectedByGravity = true
         
-        enemy.position = CGPoint(x:randX, y:randY)
+        self.enemy.physicsBody?.restitution = 0.75
+        self.enemy.physicsBody?.isDynamic = true
         
-        addChild(enemy)
+        // set the bed category to 4
+        self.enemy.physicsBody?.categoryBitMask = 4
         
-        print("Where is enemy? \(randX), \(randY)")
+        // set the collision mask = 0
+       // enemy.physicsBody?.collisionBitMask = 8
+        
+        // add the cat to the scene
+        addChild(self.enemy)
+        
+        // add the cat to the cats array
+        self.enemies.append(self.enemy)
+        
+       // print("Where is cat? \(randX), \(randY)")
     }
+    
     
     var lose:Bool = false
     
     func youLose() {
         self.lose = true
         
-        print("YOU LOSE!")
+        //print("YOU LOSE!")
         let messageLabel = SKLabelNode(text: "YOU LOSE!")
         messageLabel.fontColor = UIColor.yellow
         messageLabel.fontSize = 60
